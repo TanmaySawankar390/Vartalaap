@@ -15,10 +15,15 @@ const io = socketIo(server, {
 
 io.on('connection', (socket) => {
   console.log('New client connected');
-  
-  socket.on('message', (message) => {
-    console.log('Message received:', message);
-    io.emit('message', message);
+
+  socket.on('joinRoom', (room) => {
+    socket.join(room); // Join the room with the provided key
+    console.log(`Client joined room: ${room}`);
+  });
+
+  socket.on('message', ({ room, message }) => {
+    console.log(`Message received in room ${room}: ${message}`);
+    io.to(room).emit('message', message); // Emit to specific room
   });
 
   socket.on('disconnect', () => {
