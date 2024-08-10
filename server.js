@@ -19,11 +19,12 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', (room) => {
     socket.join(room); // Join the room with the provided key
     console.log(`Client joined room: ${room}`);
+    socket.to(room).emit('roomJoined', room); // Notify others in the room that a new client has joined
   });
 
-  socket.on('message', ({ room, message }) => {
-    console.log(`Message received in room ${room}: ${message}`);
-    io.to(room).emit('message', message); // Emit to specific room
+  socket.on('message', ({ room, text, senderId }) => {
+    console.log(`Message received in room ${room} from ${senderId}: ${text}`);
+    io.to(room).emit('message', { text, senderId }); // Emit the message along with the sender's ID to the specific room
   });
 
   socket.on('disconnect', () => {
